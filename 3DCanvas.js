@@ -38,46 +38,6 @@ function Game() {
     // Ball
     this.ball.draw();
   }
-
-  // function to calculate polar coordinates of the ball from cartesian
-  this.calcPol = function() {
-    // yaw = arctan(z / x)
-    this.ball.pol[0] = Math.atan(-this.ball.coo[2] / this.ball.coo[0]);
-    // pitch = arctan(z / y)
-    this.ball.pol[1] = Math.atan(-this.ball.coo[2] /
-                                          (CAMERA_COORD[1] - this.ball.coo[1]));
-    // distance formula
-    this.ball.pol[2] = Math.sqrt(Math.pow(this.ball.coo[0], 2) +
-                 Math.pow(this.ball.coo[1], 2) + Math.pow(this.ball.coo[2], 2));
-  }
-
-  // The 'span' of the ball refers to the angular space the ball takes up in the
-  // field of view of the camera. This is used in calculating the ultimate size
-  // of the ball as it appears on the screen.
-  this.calcSpan = function() {
-    this.ball.span = 2 * Math.atan(this.ball.rad / this.ball.pol[2]);
-  }
-
-
-  // Translates the angular span of the ball into the radius of the ball as it
-  // appears on the screen. NOTE: this method does not distort the shape of the
-  // the ball as it moves from the center of the screen.
-  this.calcSize = function() {
-    this.ball.sizeOnScreen = (this.ball.span / CAMERA_FOV) * (VIEWPORT_HEIGHT);
-  }
-
-  this.calcPos = function() {
-  /*
-  To calculate the screen position, we find the polar coordinates of the object
-  first, and map that to the 2d screen. This is the preffered approach, because
-  polar coordinates contain the distance to the object for calculating size.
-  */
-    console.log(this.ball.coo, this.ball.pol);
-    this.calcPol();
-    this.calcSpan();
-    this.calcSize();
-    console.log(this.ball.coo, this.ball.pol, this.ball.span, this.ball.sizeOnScreen);
-  }
 }
 
 function Ball() {
@@ -108,8 +68,47 @@ function Ball() {
   this.setRad = function(rad) {
     this.rad = rad;
   }
+
+  // function to calculate polar coordinates of the ball from cartesian
+  this.calcPol = function() {
+    // yaw = arctan(z / x)
+    this.pol[0] = Math.atan(-this.coo[2] / this.coo[0]);
+    // pitch = arctan(z / y)
+    this.pol[1] = Math.atan(-this.coo[2] /
+                                          (CAMERA_COORD[1] - this.coo[1]));
+    // distance formula
+    this.pol[2] = Math.sqrt(Math.pow(this.coo[0], 2) +
+                 Math.pow(this.coo[1], 2) + Math.pow(this.coo[2], 2));
+  }
+
+  // The 'span' of the ball refers to the angular space the ball takes up in the
+  // field of view of the camera. This is used in calculating the ultimate size
+  // of the ball as it appears on the screen.
+  this.calcSpan = function() {
+    this.span = 2 * Math.atan(this.rad / this.pol[2]);
+  }
+
+  // Translates the angular span of the ball into the radius of the ball as it
+  // appears on the screen. NOTE: this method does not distort the shape of the
+  // the ball as it moves from the center of the screen.
+  this.calcSize = function() {
+    this.sizeOnScreen = (this.span / CAMERA_FOV) * (VIEWPORT_HEIGHT);
+  }
+
+  this.calcPos = function() {
+  /*
+  To calculate the screen position, we find the polar coordinates of the object
+  first, and map that to the 2d screen. This is the preffered approach, because
+  polar coordinates contain the distance to the object for calculating size.
+  */
+    console.log(this.coo, this.pol);
+    this.calcPol();
+    this.calcSpan();
+    this.calcSize();
+    console.log(this.coo, this.pol, this.span, this.sizeOnScreen);
+  }
 }
 
 var g = new Game();
-g.calcPos();
+g.ball.calcPos();
 g.draw();
