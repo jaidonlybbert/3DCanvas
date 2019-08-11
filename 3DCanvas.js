@@ -5,11 +5,8 @@
 
 const VIEWPORT_HEIGHT = 800;
 const VIEWPORT_WIDTH = 800;
-const VIEWPORT_COORD = [0, 0, -400]
-const CAMERA_COORD = [0, 0, 0]; // Coordinates of camera
+const VIEWPORT_COORD = [0, 0, 400]
 const CAMERA_FOV = (Math.PI / 2);
-const FPS = 1;
-
 const METER = 80;
 
 var canvas = document.getElementById("3d");
@@ -48,14 +45,13 @@ function Game() {
 
 
 function Ball() {
-  this.coo = [0, 0, -METER]; // Coordinate in space
+  this.coo = [0, 400, 0]; // Coordinate in space
   this.vel = [0, 0, 0]; // Velocity
   this.pos = [400, 400]; // Screen position
-  this.pol = [Math.PI / 2, Math.PI / 2, METER]; // Polar coordinates
   this.rad = (0.0971 * METER / 2); // Radius
   this.col = "#FFF"; // Color
   this.span = 0; // Spanning angle of the ball in FOV of camera
-  this.sizeOnScreen = 0; // Size of the ball on the screen
+  this.sizeOnScreen = this.rad * 2; // Size of the ball on the screen
 
   this.draw = function() {
     ctx.fillStyle = this.col;
@@ -76,6 +72,7 @@ function Ball() {
     this.rad = rad;
   }
 
+/*
   // function to calculate polar coordinates of the ball from cartesian
   this.calcPol = function() {
     // yaw = arctan(z / x)
@@ -94,12 +91,13 @@ function Ball() {
     this.pol[2] = Math.sqrt(Math.pow(this.coo[0], 2) +
                  Math.pow(this.coo[1], 2) + Math.pow(this.coo[2], 2));
   }
+*/
 
   // The 'span' of the ball refers to the angular space the ball takes up in the
   // field of view of the camera. This is used in calculating the ultimate size
   // of the ball as it appears on the screen.
   this.calcSpan = function() {
-    this.span = 2 * Math.atan(this.rad / this.pol[2]);
+//    this.span = 2 * Math.atan(this.rad / this.pol[2]);
   }
 
   // Translates the angular span of the ball into the radius of the ball as it
@@ -115,11 +113,7 @@ function Ball() {
   first, and map that to the 2d screen. This is the preffered approach, because
   polar coordinates contain the distance to the object for calculating size.
   */
-    console.log(this.coo, this.pol);
-    this.calcPol();
-    this.calcSpan();
-    this.calcSize();
-    console.log(this.coo, this.pol, this.span, this.sizeOnScreen);
+
   }
 }
 
@@ -154,5 +148,4 @@ zSlider.oninput = function() {
   g.ball.coo[2] = this.value;
 }
 
-g.ball.calcPos();
 g.draw();
