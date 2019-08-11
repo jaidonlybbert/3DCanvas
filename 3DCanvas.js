@@ -80,9 +80,16 @@ function Ball() {
   this.calcPol = function() {
     // yaw = arctan(z / x)
     this.pol[0] = Math.atan(this.coo[2] / this.coo[0]);
+    if (this.coo[2] < 0 && this.coo[0] < 0) { this.pol[0] += Math.PI; }
+    else if (this.coo[2] > 0 && this.coo[0] < 0) { this.pol[0] += Math.PI; }
+    else if (this.coo[2] == 0 && this.coo[0] > 0) { this.pol[0] = 0; }
+    else if (this.coo[2] == 0 && this.coo[0] < 0) { this.pol[0] = Math.PI; }
+    else if (this.coo[2] > 0 && this.coo[0] == 0) { this.pol[0] = Math.PI / 2; }
+    else if (this.coo[2] < 0 && this.coo[0] == 0) { this.pol[0] = 3 * Math.PI / 2; }
+    else if (this.coo[2] == 0 && this.coo[0] == 0) { this.pol[0] = 0; }
     // pitch = arctan(z / y)
-    this.pol[1] = Math.atan(this.coo[2] /
-                                          (CAMERA_COORD[1] - this.coo[1]));
+    this.pol[1] = Math.atan(this.coo[1] / Math.sqrt(Math.pow(this.coo[2], 2) +
+                                                     Math.pow(this.coo[0], 2)));
     // distance formula
     this.pol[2] = Math.sqrt(Math.pow(this.coo[0], 2) +
                  Math.pow(this.coo[1], 2) + Math.pow(this.coo[2], 2));
@@ -128,9 +135,9 @@ yDisplay.innerHTML = ySlider.value;
 
 var zSlider = document.getElementById("zPos");
 var zDisplay = document.getElementById("zPosDisplay");
-zDisplay.innerHTML = -zSlider.value;
+zDisplay.innerHTML = zSlider.value;
 
-g.ball.setCoo(xSlider.value, ySlider.value, -zSlider.value);
+g.ball.setCoo(xSlider.value, ySlider.value, zSlider.value);
 
 xSlider.oninput = function() {
   xDisplay.innerHTML = this.value;
@@ -143,8 +150,8 @@ ySlider.oninput = function() {
 }
 
 zSlider.oninput = function() {
-  zDisplay.innerHTML = -this.value;
-  g.ball.coo[2] = -this.value;
+  zDisplay.innerHTML = this.value;
+  g.ball.coo[2] = this.value;
 }
 
 setInterval(function() {g.loop();}, 1000 / FPS);
