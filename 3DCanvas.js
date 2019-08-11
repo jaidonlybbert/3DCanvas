@@ -154,4 +154,5 @@ zSlider.oninput = function() {
   g.ball.coo[2] = this.value;
 }
 
-setInterval(function() {g.loop();}, 1000 / FPS);
+g.ball.calcPos();
+g.draw();
