@@ -8,6 +8,8 @@ const VIEWPORT_WIDTH = 800;
 const VIEWPORT_COORD = [0, 0, 400]
 const CAMERA_FOV = (Math.PI / 2);
 const METER = 80;
+const BASE_WIDTH = 1.48 * 80;
+const BASE_HEIGHT = 1.61 * 60;
 
 var canvas = document.getElementById("3d");
 var ctx = canvas.getContext("2d");
@@ -33,11 +35,23 @@ function Game() {
     ctx.moveTo(800,0);
     ctx.lineTo(0,800);
     ctx.stroke();
+
+    ctx.fillStyle = "blue";
+    ctx.beginPath();
+    ctx.moveTo(400 - 28, 400 + 189);
+    ctx.lineTo(400 + 28, 400 + 189);
+    ctx.lineTo(400 + 33, 400 + 222);
+    ctx.lineTo(400 - 33, 400 + 222);
+    ctx.closePath();
+    ctx.stroke();
+    ctx.fill();
     // Ball
     this.ball.draw();
   }
 
   this.loop = function() {
+    this.ball.calcSpan();
+    this.ball.calcSize();
     this.ball.calcPos();
     this.draw();
   }
@@ -48,12 +62,13 @@ function Ball() {
   this.coo = [0, 400, 0]; // Coordinate in space
   this.vel = [0, 0, 0]; // Velocity
   this.pos = [400, 400]; // Screen position
-  this.rad = (0.0971 * METER / 2); // Radius
+  this.rad = (0.18 * METER); // Radius
   this.col = "#FFF"; // Color
   this.span = 0; // Spanning angle of the ball in FOV of camera
   this.sizeOnScreen = this.rad * 2; // Size of the ball on the screen
 
   this.draw = function() {
+    console.log("yeet");
     ctx.fillStyle = this.col;
     ctx.beginPath();
     ctx.arc(this.pos[0], this.pos[1], (this.sizeOnScreen / 2), 0, 2 * Math.PI);
@@ -97,7 +112,7 @@ function Ball() {
   // field of view of the camera. This is used in calculating the ultimate size
   // of the ball as it appears on the screen.
   this.calcSpan = function() {
-//    this.span = 2 * Math.atan(this.rad / this.pol[2]);
+    this.span = 2 * Math.atan(this.rad / this.coo[1]);
   }
 
   // Translates the angular span of the ball into the radius of the ball as it
@@ -108,11 +123,8 @@ function Ball() {
   }
 
   this.calcPos = function() {
-  /*
-  To calculate the screen position, we find the polar coordinates of the object
-  first, and map that to the 2d screen. This is the preffered approach, because
-  polar coordinates contain the distance to the object for calculating size.
-  */
+    this.pos[0] = 400 + (this.coo[0] / this.coo[1] * 5 * METER);
+    this.pos[1] = 400 - (this.coo[2] / this.coo[1] * 5 * METER);
 
   }
 }
@@ -148,4 +160,4 @@ zSlider.oninput = function() {
   g.ball.coo[2] = this.value;
 }
 
-g.draw();
+setInterval( function() { g.loop(); }, 16 );
