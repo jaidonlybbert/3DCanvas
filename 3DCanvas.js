@@ -8,6 +8,7 @@ const VIEWPORT_WIDTH = 800;
 const VIEWPORT_COORD = [0, 0, -400]
 const CAMERA_COORD = [0, 0, 0]; // Coordinates of camera
 const CAMERA_FOV = (Math.PI / 2);
+const FPS = 1;
 
 const METER = 80;
 
@@ -38,7 +39,13 @@ function Game() {
     // Ball
     this.ball.draw();
   }
+
+  this.loop = function() {
+    this.ball.calcPos();
+    this.draw();
+  }
 }
+
 
 function Ball() {
   this.coo = [0, 0, -METER]; // Coordinate in space
@@ -72,9 +79,9 @@ function Ball() {
   // function to calculate polar coordinates of the ball from cartesian
   this.calcPol = function() {
     // yaw = arctan(z / x)
-    this.pol[0] = Math.atan(-this.coo[2] / this.coo[0]);
+    this.pol[0] = Math.atan(this.coo[2] / this.coo[0]);
     // pitch = arctan(z / y)
-    this.pol[1] = Math.atan(-this.coo[2] /
+    this.pol[1] = Math.atan(this.coo[2] /
                                           (CAMERA_COORD[1] - this.coo[1]));
     // distance formula
     this.pol[2] = Math.sqrt(Math.pow(this.coo[0], 2) +
@@ -110,5 +117,34 @@ function Ball() {
 }
 
 var g = new Game();
-g.ball.calcPos();
-g.draw();
+
+var xSlider = document.getElementById("xPos");
+var xDisplay = document.getElementById("xPosDisplay");
+xDisplay.innerHTML = xSlider.value;
+
+var ySlider = document.getElementById("yPos");
+var yDisplay = document.getElementById("yPosDisplay");
+yDisplay.innerHTML = ySlider.value;
+
+var zSlider = document.getElementById("zPos");
+var zDisplay = document.getElementById("zPosDisplay");
+zDisplay.innerHTML = -zSlider.value;
+
+g.ball.setCoo(xSlider.value, ySlider.value, -zSlider.value);
+
+xSlider.oninput = function() {
+  xDisplay.innerHTML = this.value;
+  g.ball.coo[0] = this.value;
+}
+
+ySlider.oninput = function() {
+  yDisplay.innerHTML = this.value;
+  g.ball.coo[1] = this.value;
+}
+
+zSlider.oninput = function() {
+  zDisplay.innerHTML = -this.value;
+  g.ball.coo[2] = -this.value;
+}
+
+setInterval(function() {g.loop();}, 1000 / FPS);
